@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lib/jquery-1.11.3.js"></script>
+    <title>Shared Worker Test</title>
+</head>
+<body>
+    <div>
+        <input type="text" name="" id="txt">
+        <button id="open">连接websocket</button>
+        <button id="send">发送消息</button>
+        <button id="close">关闭websocket</button>
+        <button id="terminate">关闭worker</button>
+
+        <div id="message">
+    <!--    <button id="">连接websocket</button>-->
+    <!--    <button id="open">连接websocket</button>-->
+    </div>
+</body>
+
+
+<script>
+    var worker;
+    console.log("支持sharedworker")
+    worker = new SharedWorker('work.js');
+
+    worker.port.onmessage = function(event) {
+        console.log("收到消息");
+    };
+
+    worker.port.onmessage = function (event) {
+        console.log("收到消息");
+        console.log('Received message ' + JSON.stringify(event.data));
+        doSomething(event.data);
+    }
+    function doSomething(innerHTML) {
+        // 执行任务
+        innerHTML = JSON.stringify(innerHTML);
+        document.getElementById('message').innerHTML += innerHTML + '<br/>';
+    }
+    $("#open").on('click', function () {
+        worker.port.postMessage({method: "open", data: "开websocket"});
+    });
+    $("#send").on('click', function () {
+        worker.port.postMessage({method: "send", data: $('#txt').val()});
+    });
+    $("#close").on('click', function () {
+        worker.port.postMessage({method: "close", data: "关websocket"})
+    });
+    $("#terminate").on('click', function () {
+        worker.port.close();
+    })
+
+
+    // console.log($('#txt').val())
+</script>
+
+</html>
